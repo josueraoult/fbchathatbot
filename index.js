@@ -9,8 +9,8 @@ const app = express();
 const PORT = 8080;
 
 // Intégration directe des tokens (remplace les valeurs par tes tokens réels)
-const PAGE_ACCESS_TOKEN = "EAGWp4PDBMf4BOzEEDdTe6dDqN5Ry8XBovMvNWW7lZCnVTk1mmJceFThXCxTEFbab5GUNsbL2UJg2swUb1L1CZA8AdcvhVIbh6rISiZBJQVM1x3RWeLtc12ySJ14Qn7wcWsb1IssMUyG6OfZBRytD0ZAmZAs0UxaQMKbL1lrzPd3TtUevS6BPPnoDnfZA1W0c085";
-const VERIFY_TOKEN = "openofficeweb";
+const PAGE_ACCESS_TOKEN = "EAGWp4PDBMf4BO5IHhcUwH9PRiaMuSYU0V5TJoLJwkZBrhdByuFp5FBU9QWcPElGTf9OE3swuwMVwOxZAjbDvtFFQGgopMLcTgJodRpv6U63ZB2mSZCvuKY4E91P97Mwj5ZAkE2WDOyxYQJfXjBKEjVR33SPt1eTq86WlMNzOIKuZBUiXErqHsR3dgTeTFmxNVa";
+const VERIFY_TOKEN = "fbchatbot";
 
 // Middleware pour parser le JSON
 app.use(bodyParser.json());
