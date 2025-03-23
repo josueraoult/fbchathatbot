@@ -1,9 +1,7 @@
-// index.js
-// Main Hub
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const path = require("path"); // Ajoutez cette ligne pour manipuler les chemins de fichiers
 
 const app = express();
 const PORT = 8080;
@@ -15,9 +13,12 @@ const VERIFY_TOKEN = "fbchatbot";
 // Middleware pour parser le JSON
 app.use(bodyParser.json());
 
-// Route principale pour le ping UptimeRobot et l'indication en ligne
+// Servir les fichiers statiques du dossier 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route principale pour servir index.html
 app.get("/", (req, res) => {
-  res.send("🚀 Nano Bot fonctionne !");
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Vérification du webhook Messenger (GET)
