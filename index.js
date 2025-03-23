@@ -1,21 +1,21 @@
 // index.js
-//main hub 
+// Main Hub
 
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = 8080;
 
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN; // À définir dans .env
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;           // À définir dans .env
+// Intégration directe des tokens (remplace les valeurs par tes tokens réels)
+const PAGE_ACCESS_TOKEN = "EAGWp4PDBMf4BOzEEDdTe6dDqN5Ry8XBovMvNWW7lZCnVTk1mmJceFThXCxTEFbab5GUNsbL2UJg2swUb1L1CZA8AdcvhVIbh6rISiZBJQVM1x3RWeLtc12ySJ14Qn7wcWsb1IssMUyG6OfZBRytD0ZAmZAs0UxaQMKbL1lrzPd3TtUevS6BPPnoDnfZA1W0c085";
+const VERIFY_TOKEN = "openofficeweb";
 
 // Middleware pour parser le JSON
 app.use(bodyParser.json());
 
-// Route principale pour le ping UptimeRobot
+// Route principale pour le ping UptimeRobot et l'indication en ligne
 app.get("/", (req, res) => {
   res.send("🚀 Nano Bot fonctionne !");
 });
@@ -62,7 +62,7 @@ app.post("/webhook", async (req, res) => {
               await delay(1500);
               await stopTypingIndicator(senderId);
 
-              // Appel à l'API IA pour obtenir une réponse
+              // Appel à la nouvelle API pour obtenir une réponse
               const aiResponse = await getAiResponse(userMessage);
               await sendMessage(senderId, aiResponse);
             }
@@ -80,18 +80,14 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Appel à l'API IA pour obtenir une réponse
+// Appel à la nouvelle API pour obtenir une réponse
 async function getAiResponse(userMessage) {
   try {
-    const prompt = `CHATBOT V3, modèle GPT4-0 LITE, l’IA ultime parlant avec emoji, les esprits des plus grands modèles intelligents du monde. 🚀 Pose-moi une question et reçois une réponse précise, logique et réaliste. 🤖.
-    
-Utilisateur: ${userMessage}
-Chat Bot:`;
-    
-    const url = "https://backend.buildpicoapps.com/aero/run/llm-api?pk=v1-Z0FBQUFBQm5HUEtMSjJkakVjcF9IQ0M0VFhRQ0FmSnNDSHNYTlJSblE0UXo1Q3RBcjFPcl9YYy1OZUhteDZWekxHdWRLM1M1alNZTkJMWEhNOWd4S1NPSDBTWC12M0U2UGc9PQ==";
-    
-    const response = await axios.post(url, { prompt: prompt }, { headers: { "Content-Type": "application/json" } });
-    return response.data.text || "⚠️ L'IA n'a pas pu répondre.";
+    // On encode le message de l'utilisateur pour l'inclure dans l'URL
+    const url = `https://jonell01-ccprojectsapihshs.hf.space/api/gpt4?ask=${encodeURIComponent(userMessage)}&id=1`;
+    const response = await axios.get(url);
+    // On suppose que la réponse est soit dans response.data.response soit directement dans response.data
+    return (response.data.response || response.data) || "⚠️ L'IA n'a pas pu répondre.";
   } catch (error) {
     console.error("❌ Erreur API:", error);
     return "⚠️ Impossible de contacter l'IA.";
@@ -131,7 +127,6 @@ async function sendMessageToFacebook(messageData) {
   const url = `https://graph.facebook.com/v22.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
   try {
     const response = await axios.post(url, messageData);
-    // On peut logguer la réponse si besoin
     console.log("📤 Message envoyé :", messageData);
     return response.data;
   } catch (error) {
