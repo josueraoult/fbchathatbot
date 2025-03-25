@@ -5,8 +5,10 @@ const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+
+// ✅ Ton Token Meta
+const VERIFY_TOKEN = "whatsApp";  // 🔹 Token pour le Webhook
+const WHATSAPP_TOKEN = "EAGWp4PDBMf4BOwQm2M064dBwGrKLc7sAozIEOUcE2iAbzVvJ2zZBp6lxs0BcqxjdMH8WpZACjsdFOyeGOtIK5zZCKwb1fDgQT4LauEzfQlRzJTpZCx5n4jmW1jImCWZCkQFO4noNl16rCqgDzt1yu1zWuO9RbtVL0Gp54N3KtwN1ZCHqFngNKMdIZBlSITZB9xFAesMZD";
 const API_AI_URL = "https://jonell01-ccprojectsapihshs.hf.space/api/gpt4";
 
 app.use(bodyParser.json());
