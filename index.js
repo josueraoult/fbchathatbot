@@ -1,27 +1,26 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
-const path = require("path"); // Ajoutez cette ligne pour manipuler les chemins de fichiers
+const path = require("path");
+require("dotenv").config(); // si tu veux passer en .env ensuite
 
 const app = express();
 const PORT = 8080;
 
-// Intégration directe des tokens (remplace les valeurs par tes tokens réels)
+// Tokens (tu peux les mettre dans un fichier .env pour plus de sécurité)
 const PAGE_ACCESS_TOKEN = "EAGWp4PDBMf4BO5IHhcUwH9PRiaMuSYU0V5TJoLJwkZBrhdByuFp5FBU9QWcPElGTf9OE3swuwMVwOxZAjbDvtFFQGgopMLcTgJodRpv6U63ZB2mSZCvuKY4E91P97Mwj5ZAkE2WDOyxYQJfXjBKEjVR33SPt1eTq86WlMNzOIKuZBUiXErqHsR3dgTeTFmxNVa";
 const VERIFY_TOKEN = "fbchatbot";
+const GEMINI_API_KEY = "AIzaSyAArErZGDDJx7DJwExgY_pPWmN7Tjai8nk";
 
-// Middleware pour parser le JSON
+// Middleware
 app.use(bodyParser.json());
-
-// Servir les fichiers statiques du dossier 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route principale pour servir index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Vérification du webhook Messenger (GET)
+// Vérification webhook
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -34,37 +33,30 @@ app.get("/webhook", (req, res) => {
   return res.status(403).send("Forbidden");
 });
 
-// Gestion des événements Messenger (POST)
+// Réception des messages
 app.post("/webhook", async (req, res) => {
   const body = req.body;
 
   if (body.object === "page") {
-    // Parcours de chaque entrée
     await Promise.all(
       body.entry.map(async (entry) => {
-        // Il est possible qu'il y ait plusieurs événements dans "messaging"
         await Promise.all(
           entry.messaging.map(async (event) => {
             const senderId = event.sender.id;
 
-            // Gestion du bouton "Démarrer"
             if (event.postback && event.postback.payload === "GET_STARTED_PAYLOAD") {
-              await sendMessage(senderId, "👋 Bienvenue ! Je suis Nano Bot, une IA avancée. Comment puis-je vous aider ?");
+              await sendMessage(senderId, "👋 Bienvenue ! Je suis **Chatbot V3**, une IA avancée. Comment puis-je vous aider ?");
               return;
             }
 
-            // Gestion des messages texte
             if (event.message && event.message.text) {
               const userMessage = event.message.text;
 
-              // Afficher l'indicateur de saisie
               await showTypingIndicator(senderId);
-              // Pause pour simuler la réflexion de l'IA (1.5 sec)
               await delay(1500);
               await stopTypingIndicator(senderId);
 
-              // Appel à la nouvelle API pour obtenir une réponse
-              const aiResponse = await getAiResponse(userMessage);
+              const aiResponse = await getGeminiResponse(userMessage);
               await sendMessage(senderId, aiResponse);
             }
           })
@@ -73,29 +65,33 @@ app.post("/webhook", async (req, res) => {
     );
     return res.status(200).send("EVENT_RECEIVED");
   }
+
   return res.sendStatus(404);
 });
 
-// Fonction pour simuler un délai
+// Delay simulé
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Appel à la nouvelle API pour obtenir une réponse
-async function getAiResponse(userMessage) {
+// Appel à l'API Gemini
+async function getGeminiResponse(userMessage) {
   try {
-    // On encode le message de l'utilisateur pour l'inclure dans l'URL
-    const url = `https://jonell01-ccprojectsapihshs.hf.space/api/gpt4?ask=${encodeURIComponent(userMessage)}&id=1`;
-    const response = await axios.get(url);
-    // On suppose que la réponse est soit dans response.data.response soit directement dans response.data
-    return (response.data.response || response.data) || "⚠️ L'IA n'a pas pu répondre.";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+    const payload = {
+      contents: [{ parts: [{ text: userMessage }] }]
+    };
+
+    const response = await axios.post(url, payload);
+    const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+    return text || "⚠️ L'IA n'a pas pu répondre.";
   } catch (error) {
-    console.error("❌ Erreur API:", error);
-    return "⚠️ Impossible de contacter l'IA.";
+    console.error("❌ Erreur Gemini API:", error.response ? error.response.data : error.message);
+    return "⚠️ Erreur lors de la connexion à l'IA.";
   }
 }
 
-// Fonction pour envoyer un message simple à Messenger
+// Envoi de message à Facebook
 async function sendMessage(senderId, text) {
   const messageData = {
     recipient: { id: senderId },
@@ -104,17 +100,15 @@ async function sendMessage(senderId, text) {
   await sendMessageToFacebook(messageData);
 }
 
-// Fonction pour afficher l'indicateur de saisie ("typing_on")
+// Indicateurs de saisie
 async function showTypingIndicator(senderId) {
   await sendAction(senderId, "typing_on");
 }
 
-// Fonction pour arrêter l'indicateur de saisie ("typing_off")
 async function stopTypingIndicator(senderId) {
   await sendAction(senderId, "typing_off");
 }
 
-// Fonction pour envoyer une action (ex: typing_on, typing_off)
 async function sendAction(senderId, action) {
   const messageData = {
     recipient: { id: senderId },
@@ -123,7 +117,7 @@ async function sendAction(senderId, action) {
   await sendMessageToFacebook(messageData);
 }
 
-// Envoi du message via l'API Messenger de Facebook
+// Envoi via API Facebook
 async function sendMessageToFacebook(messageData) {
   const url = `https://graph.facebook.com/v22.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
   try {
@@ -135,7 +129,7 @@ async function sendMessageToFacebook(messageData) {
   }
 }
 
-// Démarrer le serveur
+// Démarrage serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+  console.log(`🚀 Chatbot V3 en ligne sur le port ${PORT}`);
 });
