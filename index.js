@@ -77,12 +77,21 @@ function delay(ms) {
 // Appel à l'API Gemini
 async function getGeminiResponse(userMessage) {
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
     const payload = {
-      contents: [{ parts: [{ text: userMessage }] }]
+      contents: [
+        {
+          parts: [{ text: userMessage }]
+        }
+      ]
     };
 
-    const response = await axios.post(url, payload);
+    const response = await axios.post(url, payload, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
     const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
     return text || "⚠️ L'IA n'a pas pu répondre.";
   } catch (error) {
@@ -90,7 +99,6 @@ async function getGeminiResponse(userMessage) {
     return "⚠️ Erreur lors de la connexion à l'IA.";
   }
 }
-
 // Envoi de message à Facebook
 async function sendMessage(senderId, text) {
   const messageData = {
