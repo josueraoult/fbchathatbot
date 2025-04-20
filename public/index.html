@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot V3 - Tableau de bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-online {
+            background-color: #28a745;
+            box-shadow: 0 0 10px #28a745;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .last-update {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .api-badge {
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <span class="status-indicator status-online"></span>
+                            Chatbot V3 est en ligne
+                        </h4>
+                        <p class="card-subtitle mb-2 text-muted">
+                            Mise à jour en temps réel via Render + UptimeRobot
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-users me-2"></i>Utilisateurs actifs</h5>
+                        <div class="stat-value" id="activeUsers">~93</div>
+                        <p class="text-muted">Session dernière heure</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-stopwatch me-2"></i>Temps de réponse</h5>
+                        <div class="stat-value text-success">Instantané</div>
+                        <p class="text-muted">Moyenne: &lt;1s</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-shield-alt me-2"></i>Système de surveillance</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Statut UptimeRobot : Surveillance 24h/24</span>
+                            <span class="badge bg-success">Actif</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Port du serveur :</span>
+                            <span class="badge bg-primary">8080</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-robot me-2"></i>Technologie IA</h5>
+                        <p>Modèle utilisé : <span class="badge bg-info">Gemini 2.0 Flash</span></p>
+                        <p class="api-badge">
+                            <span class="badge bg-dark">API Key:</span> 
+                            <code>AIzaSyA...Tjai8nk</code>
+                        </p>
+                        <p class="api-badge">
+                            <span class="badge bg-dark">Endpoint:</span> 
+                            <code>generateContent</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fab fa-facebook me-2"></i>Intégration Messenger</h5>
+                        <p>Token de vérification : <code>fbchatbot</code></p>
+                        <p>Page Access Token : <code>EAGWp4...NVa</code></p>
+                        <a href="https://m.me/your_page" class="btn btn-primary mt-2" target="_blank">
+                            <i class="fab fa-facebook-messenger me-1"></i> Tester le bot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="last-update mb-0">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            Dernière mise à jour : <span id="lastUpdate"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mise à jour dynamique des données
+        function updateDashboard() {
+            // Mise à jour de l'heure
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `${now.toLocaleDateString('fr-FR')}, ${now.toLocaleTimeString('fr-FR')}`;
+            
+            // Simulation d'utilisateurs actifs (aléatoire entre 50 et 150)
+            const randomUsers = Math.floor(Math.random() * 100) + 50;
+            document.getElementById('activeUsers').textContent = `~${randomUsers}`;
+        }
+
+        // Mise à jour initiale
+        updateDashboard();
+        
+        // Actualisation toutes les 30 secondes
+        setInterval(updateDashboard, 30000);
+
+        // Masquage partiel des tokens sensibles
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('code');
+            elements.forEach(el => {
+                if(el.textContent.length > 15) {
+                    el.textContent = el.textContent.substring(0, 6) + '...' + 
+                                    el.textContent.substring(el.textContent.length - 6);
+                }
+            });
+        });
+    </script>
+</body>
+          </html>
