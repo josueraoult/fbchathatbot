@@ -1,6 +1,0 @@
-UptimeRobot monitor for Chatbot V3
-Status: ✅ Online
-Last checked: {timestamp}
-Response time: Excellent
-Monitoring interval: 5 minutes
-Ping URL: https://fbchathatbot.onrender.com
