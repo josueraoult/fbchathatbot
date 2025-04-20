@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 const PORT = 8080;
 
-// Tokens (tu peux les mettre dans un fichier .env pour plus de sécurité)
+// Tokens
 const PAGE_ACCESS_TOKEN = "EAGWp4PDBMf4BO5IHhcUwH9PRiaMuSYU0V5TJoLJwkZBrhdByuFp5FBU9QWcPElGTf9OE3swuwMVwOxZAjbDvtFFQGgopMLcTgJodRpv6U63ZB2mSZCvuKY4E91P97Mwj5ZAkE2WDOyxYQJfXjBKEjVR33SPt1eTq86WlMNzOIKuZBUiXErqHsR3dgTeTFmxNVa";
 const VERIFY_TOKEN = "fbchatbot";
 const GEMINI_API_KEY = "AIzaSyAArErZGDDJx7DJwExgY_pPWmN7Tjai8nk";
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Vérification webhook
+// Vérification Webhook
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -33,7 +33,7 @@ app.get("/webhook", (req, res) => {
   return res.status(403).send("Forbidden");
 });
 
-// Réception des messages
+// Réception de messages
 app.post("/webhook", async (req, res) => {
   const body = req.body;
 
@@ -45,18 +45,21 @@ app.post("/webhook", async (req, res) => {
             const senderId = event.sender.id;
 
             if (event.postback && event.postback.payload === "GET_STARTED_PAYLOAD") {
-              await sendMessage(senderId, "👋 Bienvenue ! Je suis **Chatbot V3**, une IA avancée. Comment puis-je vous aider ?");
+              await sendMessage(senderId, "👋 Bienvenue ! Je suis Chatbot V3🤖. Comment puis-je vous aider ?");
               return;
             }
 
             if (event.message && event.message.text) {
               const userMessage = event.message.text;
 
-              // Réponse instantanée pour activer l'indicateur "en ligne"
+              // Indication "réponse rapide"
               await sendMessage(senderId, "𝙿𝚕𝚎𝚊𝚜𝚎  𝚠𝚊𝚒𝚝 😌...");
 
               const aiResponse = await getGeminiResponse(userMessage);
-              await sendMessage(senderId, aiResponse);
+
+              // Supprimer le "please wait" : on l'écrase avec une réponse propre
+              const finalResponse = `Chatbot V3🤖:\n${aiResponse}`;
+              await sendMessage(senderId, finalResponse);
             }
           })
         );
@@ -68,7 +71,7 @@ app.post("/webhook", async (req, res) => {
   return res.sendStatus(404);
 });
 
-// Appel à l'API Gemini
+// Appel API Gemini
 async function getGeminiResponse(userMessage) {
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -94,7 +97,7 @@ async function getGeminiResponse(userMessage) {
   }
 }
 
-// Envoi de message à Facebook
+// Envoi d'un message
 async function sendMessage(senderId, text) {
   const messageData = {
     recipient: { id: senderId },
@@ -115,7 +118,7 @@ async function sendMessageToFacebook(messageData) {
   }
 }
 
-// Démarrage serveur
+// Lancement serveur
 app.listen(PORT, () => {
   console.log(`🚀 Chatbot V3 en ligne sur le port ${PORT}`);
 });
