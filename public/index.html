@@ -38,6 +38,13 @@
         .api-badge {
             font-size: 0.75rem;
         }
+        .example-response {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -51,9 +58,7 @@
                             Chatbot V3 est en ligne
                         </h4>
                         <p class="card-subtitle mb-2 text-muted">
-                            Ce site à été Mise à jour Par
-                            <br><a href="https://www.facebook.com/profile.php?id=61551977964717" class="btn btn-primary mt-2" target="_blank">
-                            <i class="fab fa-facebook-messenger me-1"></i>Admin bot</a>
+                            Mise à jour en temps réel via Render + UptimeRobot
                         </p>
                     </div>
                 </div>
@@ -114,6 +119,19 @@
                             <span class="badge bg-dark">Endpoint:</span> 
                             <code>generateContent</code>
                         </p>
+                        <p><strong>URL de l'API :</strong> <a href="https://fbchathatbot.onrender.com/generateContent" target="_blank">https://api.yourdomain.com/generateContent</a></p>
+                        <p><strong>Exemple de requête (POST) :</strong></p>
+                        <pre class="example-response">
+{
+  "q": "hello what's up"
+}
+                        </pre>
+                        <p><strong>Exemple de réponse :</strong></p>
+                        <pre class="example-response">
+{
+  "response": "Hello! How can I assist you today?"
+}
+                        </pre>
                     </div>
                 </div>
             </div>
@@ -123,7 +141,7 @@
                         <h5 class="card-title"><i class="fab fa-facebook me-2"></i>Intégration Messenger</h5>
                         <p>Token de vérification : <code>fbchatbot</code></p>
                         <p>Page Access Token : <code>EAGWp4...NVa</code></p>
-                        <a href="https://www.facebook.com/profile.php?id=61551977964717" class="btn btn-primary mt-2" target="_blank">
+                        <a href="https://m.me/your_page" class="btn btn-primary mt-2" target="_blank">
                             <i class="fab fa-facebook-messenger me-1"></i> Tester le bot
                         </a>
                     </div>
