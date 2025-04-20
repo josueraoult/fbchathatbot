@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 const path = require("path");
-require("dotenv").config(); // si tu veux passer en .env ensuite
+require("dotenv").config();
 
 const app = express();
 const PORT = 8080;
@@ -52,9 +52,8 @@ app.post("/webhook", async (req, res) => {
             if (event.message && event.message.text) {
               const userMessage = event.message.text;
 
-              await showTypingIndicator(senderId);
-              await delay(1500);
-              await stopTypingIndicator(senderId);
+              // Réponse instantanée pour activer l'indicateur "en ligne"
+              await sendMessage(senderId, "Merci pour votre message ! Je vous réponds immédiatement...");
 
               const aiResponse = await getGeminiResponse(userMessage);
               await sendMessage(senderId, aiResponse);
@@ -68,11 +67,6 @@ app.post("/webhook", async (req, res) => {
 
   return res.sendStatus(404);
 });
-
-// Delay simulé
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 // Appel à l'API Gemini
 async function getGeminiResponse(userMessage) {
@@ -99,28 +93,12 @@ async function getGeminiResponse(userMessage) {
     return "⚠️ Erreur lors de la connexion à l'IA.";
   }
 }
+
 // Envoi de message à Facebook
 async function sendMessage(senderId, text) {
   const messageData = {
     recipient: { id: senderId },
     message: { text: text },
-  };
-  await sendMessageToFacebook(messageData);
-}
-
-// Indicateurs de saisie
-async function showTypingIndicator(senderId) {
-  await sendAction(senderId, "typing_on");
-}
-
-async function stopTypingIndicator(senderId) {
-  await sendAction(senderId, "typing_off");
-}
-
-async function sendAction(senderId, action) {
-  const messageData = {
-    recipient: { id: senderId },
-    sender_action: action,
   };
   await sendMessageToFacebook(messageData);
 }
