@@ -53,7 +53,7 @@ app.post("/webhook", async (req, res) => {
               const userMessage = event.message.text;
 
               // Réponse instantanée pour activer l'indicateur "en ligne"
-              await sendMessage(senderId, "Merci pour votre message ! Je vous réponds immédiatement...");
+              await sendMessage(senderId, "𝙿𝚕𝚎𝚊𝚜𝚎  𝚠𝚊𝚒𝚝 😌...");
 
               const aiResponse = await getGeminiResponse(userMessage);
               await sendMessage(senderId, aiResponse);
